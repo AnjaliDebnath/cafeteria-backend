@@ -8,6 +8,7 @@ const userRoutes= require('./routes/userRoutes');
 const cartRoutes= require('./routes/cartRoutes');
 const dishRoutes= require('./routes/dishRoutes');
 const counterRoutes= require('./routes/counterRoutes');
+const authRoutes= require('./routes/authRoutes');
 
 const mongodb = require("mongodb");
 const connectDb = require("./database");
@@ -21,8 +22,9 @@ connectDb();
 
 app.use('/user', userRoutes);
 app.use('/dish', dishRoutes);
-app.use('/cart', cartRoutes);
+app.use('/users', cartRoutes);
 app.use('/counter', counterRoutes);
+app.use('/auth', authRoutes);
 
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
