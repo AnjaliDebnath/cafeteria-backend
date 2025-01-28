@@ -6,9 +6,10 @@ const DishSchema= new mongoose.Schema({
     price:{type:'number', required:'true'},
     image:{type:'string', },
     category:{type:'string', required:'true'},
-    availablility:{type:'string', required:'true'},
-    counter:{type:mongoose.Schema.Types.ObjectId, required:'true'},
+    availablility:{type:'string', },
+    counter:{type:[mongoose.Schema.Types.ObjectId]},
     
+
 })
 
-module.exports=mongoose.model('Dish', DishSchema)
+module.exports=mongoose.model('Dish', DishSchema);
