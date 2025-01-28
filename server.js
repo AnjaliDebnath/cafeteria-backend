@@ -20,9 +20,13 @@ const MONGO_URI= process.env.MONGO_URI;
 
 connectDb();
 
+app.use(cors({
+    origin: 'http://localhost:5173', credentials:true
+  })); 
+
 app.use('/user', userRoutes);
 app.use('/dish', dishRoutes);
-app.use('/users', cartRoutes);
+app.use('/cart', cartRoutes);
 app.use('/counter', counterRoutes);
 app.use('/auth', authRoutes);
 
