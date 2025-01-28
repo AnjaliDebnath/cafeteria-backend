@@ -2,22 +2,109 @@ const express = require('express');
 const router =  express.Router();
 const Counter = require('../models/counter');
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
     try {
-      const { merchant_id } = req.body;
+      const {
+        merchants,
+        dishes,
+        counter_name,
+        description,
+        location,
+        imageUrl,
+        operating_hours,
+        isActive,
+      } = req.body;
   
-     
-      if (!merchant_id ) {
-        return res.status(400).json({ error: 'merchant_id must be an array of valid ObjectIds.' });
+      if (!counter_name) {
+        return res.status(400).json({ error: "Counter name is required." });
       }
   
-     
-      const newCounter = new Counter({ merchant_id });
-      const savedCounter = await newCounter.save();
+      const formattedDishes =
+      Array.isArray(dishes) && dishes.every((id) => typeof id === "string")
+        ? dishes
+        : [];
+
+    const newCounter = new Counter({
+      merchants,
+      dishes: formattedDishes,
+        counter_name,
+        description,
+        location,
+        imageUrl,
+        operating_hours,
+        isActive,
+      });
   
-      res.status(201).json({ message: 'Counter created successfully', counter: savedCounter });
-    } catch (err) {
-      res.status(500).json({ error: 'Failed to create counter', details: err.message });
+      const savedCounter = await newCounter.save();
+      res.status(201).json({
+        message: "Counter created successfully.",
+        counter: savedCounter,
+      });
+    } catch (error) {
+      console.error("Error creating counter:", error);
+      res.status(500).json({
+        error: "Server error. Could not create counter.",
+        details: error.message, // Include additional details
+      });
+    }
+  });
+  
+  router.post("/bulk", async (req, res) => {
+    try {
+      const { counters } = req.body;
+  
+      if (!Array.isArray(counters) || counters.length === 0) {
+        return res.status(400).json({ error: "Counters array is required." });
+      }
+  
+      const formattedCounters = counters.map((counter) => {
+        const {
+          merchants = [],
+          dishes = [],
+          counter_name,
+          description,
+          location,
+          imageUrl,
+          operating_hours = {},
+          isActive = true,
+        } = counter;
+  
+        // Ensure merchants and dishes are valid arrays of strings
+        const formattedDishes =
+          Array.isArray(dishes) && dishes.every((id) => typeof id === "string")
+            ? dishes
+            : [];
+  
+        const formattedMerchants =
+          Array.isArray(merchants) && merchants.every((id) => typeof id === "string")
+            ? merchants
+            : [];
+  
+        return {
+          merchants: formattedMerchants,
+          dishes: formattedDishes,
+          counter_name,
+          description,
+          location,
+          imageUrl,
+          operating_hours,
+          isActive,
+        };
+      });
+  
+      // Insert all counters in one operation
+      const savedCounters = await Counter.insertMany(formattedCounters);
+  
+      res.status(201).json({
+        message: "Counters created successfully.",
+        counters: savedCounters,
+      });
+    } catch (error) {
+      console.error("Error creating counters:", error);
+      res.status(500).json({
+        error: "Server error. Could not create counters.",
+        details: error.message,
+      });
     }
   });
   
