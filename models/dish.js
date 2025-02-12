@@ -7,7 +7,7 @@ const DishSchema= new mongoose.Schema({
     image:{type:'string', },
     category:{type:'string', required:'true'},
     availablility:{type:'string', },
-    counter:{type:[mongoose.Schema.Types.ObjectId]},
+    counter:{type:[mongoose.Schema.Types.ObjectId], ref:"Counter"},
     
 
 })

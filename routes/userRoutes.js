@@ -53,18 +53,21 @@ router.put('/id/:id', async (req, res)=>{
 });
 
 
-router.delete('/id/:id', async (req, res)=>{
-    try{
-        const user = await User.findByIdAndDelete(req.params.id); 
-        if (!user) {
-          return res.status(404).json({ error: 'User not found' }); 
-        }
-        res.status(200).json({message:"User deleted"});
-      } catch (err) {
-        res.status(400).json({ error: 'Failed to delete user', details: err.message });  
-        }
-   
+router.delete('/id/:id', async (req, res) => {
+  try {
+      const user = await User.findByIdAndDelete(req.params.id);
+      
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.status(200).json({ message: 'User deleted successfully' });
+  } catch (err) {
+      console.error('Error deleting user:', err);
+      res.status(500).json({ error: 'Failed to delete user', details: err.message });
+  }
 });
+
 
 
 router.get('/merchant', async(req, res)=>{

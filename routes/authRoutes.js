@@ -11,15 +11,15 @@ const sessions= new Set();
 router.post("/register", async (req, res) => {
     try {
 
-      const { name, password, email } = req.body;
-      console.log(name, password, email);
+      const { name, password, email , role} = req.body;
+      console.log(name, password, email,role);
   
-      if (!name || !password || !email) {
+      if (!name || !password || !email ) {
         return res.status(400).json({ message: "All fields are required" });
       }
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      const user = new User({ name, email, password: hashedPassword });
+      const user = new User({ name, email, password: hashedPassword , role});
       await user.save();
       res.status(201).json({ message: "User has been registered successfully" });
     } catch (err) {
@@ -45,8 +45,8 @@ router.post("/register", async (req, res) => {
         return res.status(400).json({ message: "Invalid email or password" });
       }
   
-      const accessToken = generateToken({ user: user.name, id : user._id });
-      const refreshToken = jwt.sign({ user: user.name, id :user._id }, REFRESH_TOKEN_SECRET);
+      const accessToken = generateToken({ user: user.name, id : user._id , role:user.role});
+      const refreshToken = jwt.sign({ user: user.name, id :user._id , role:user.role}, REFRESH_TOKEN_SECRET);
    
       sessions.add(refreshToken);
       
@@ -54,7 +54,8 @@ router.post("/register", async (req, res) => {
         message: "Login successful",
         accessToken,
         refreshToken,
-        name: user.name, 
+        name: user.name,
+        role: user.role, 
       });
     } catch (err) {
       console.error("Login error:", err);
